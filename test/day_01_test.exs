@@ -20,4 +20,21 @@ defmodule Day01Test do
 
     assert masses |> Day01.fuel_sum == 3327415
   end
+
+  test "recursively calculates sample inputs correctly" do
+    assert Day01.fuel_inclusive(14)     == 2
+    assert Day01.fuel_inclusive(1969)   == 966
+    assert Day01.fuel_inclusive(100756) == 50346
+
+    assert Day01.fuel_inclusive_sum([14, 1969, 100756]) == 51314
+  end
+
+  test "recursively calculates inputs correctly" do
+    masses = "fixtures/day01_fixture.txt"
+      |> File.read!
+      |> split_lines
+      |> Enum.map(&String.to_integer/1)
+
+    assert masses |> Day01.fuel_inclusive_sum == 4988257
+  end
 end
