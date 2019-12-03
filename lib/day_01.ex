@@ -3,10 +3,13 @@ defmodule Day01 do
     max(div(mass,3) - 2, 0)
   end
 
+  # Part 1
   def fuel_sum(masses) do
     masses |> Enum.map(&fuel/1) |> Enum.sum
   end
 
+  # Part 2
+  def fuel_inclusive(mass), do: fuel_inclusive(mass, 0)
   def fuel_inclusive(mass, total) when mass <= 0, do: total
 
   def fuel_inclusive(mass, total) do
@@ -15,7 +18,6 @@ defmodule Day01 do
     fuel_inclusive(fuel_mass, total + fuel_mass)
   end
 
-  def fuel_inclusive(mass), do: fuel_inclusive(mass, 0)
 
   def fuel_inclusive_sum(masses) do
     masses
