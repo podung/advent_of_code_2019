@@ -3,28 +3,29 @@ defmodule Day02 do
     run_intcode(Enum.slice(intcode, 0, 4), { 4, intcode })
   end
 
+  defp operate(noun_index, verb_index, store_index, instruction, memory) do
+    noun = memory |> Enum.at(noun_index)
+    verb = memory |> Enum.at(verb_index)
+
+    new_value = instruction.(noun, verb)
+
+    memory |> List.replace_at(store_index, new_value)
+  end
+
   defp run_intcode([1, index1, index2, index3], { cursor, acc }) do
-    addend1 = acc |> Enum.at(index1)
-    addend2 = acc |> Enum.at(index2)
+    new_memory = operate(index1, index2, index3, &(&1 + &2), acc)
+    next_instruction = new_memory |> Enum.slice(cursor, 4)
 
-    acc = acc |> List.replace_at(index3, addend1 + addend2)
-
-    next = acc |> Enum.slice(cursor, 4)
-
-    run_intcode(next, { cursor + 4, acc })
+    run_intcode(next_instruction, { cursor + 4, new_memory })
   end
 
   defp run_intcode([2, index1, index2, index3], { cursor, acc }) do
-    factor1 = acc |> Enum.at(index1)
-    factor2 = acc |> Enum.at(index2)
+    new_memory = operate(index1, index2, index3, &(&1 * &2), acc)
+    next_instruction = new_memory |> Enum.slice(cursor, 4)
 
-    acc = acc |> List.replace_at(index3, factor1 * factor2)
-
-    next = acc |> Enum.slice(cursor, 4)
-
-    run_intcode(next, { cursor + 4, acc })
+    run_intcode(next_instruction, { cursor + 4, new_memory })
   end
 
-  defp run_intcode([99 | t], { cursor, acc }), do: acc
+  defp run_intcode([99 | _t], { _cursor, acc }), do: acc
 
 end

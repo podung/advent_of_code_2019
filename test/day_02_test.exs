@@ -1,8 +1,6 @@
 defmodule Day02Test do
   use ExUnit.Case
 
-  import Aoc2019Utils
-
   test "calculates sample intcodes correctly" do
     assert Day02.run_intcode([1,0,0,0,99]) == [2,0,0,0,99]
     assert Day02.run_intcode([2,3,0,3,99]) == [2,3,0,6,99]
