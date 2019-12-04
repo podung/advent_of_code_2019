@@ -28,4 +28,23 @@ defmodule Day02 do
 
   defp run_intcode([99 | _t], { _cursor, acc }), do: acc
 
+
+  ### Part 2 finder
+  def find_input_values_for_output(memory, desired_output) do
+    possibilities = for n <- 0..99, v <- 0..99, do: {n, v}
+
+    input_values  = possibilities
+      |> Enum.reduce_while(nil, fn { n, v }, acc ->
+           memory = memory |> List.replace_at(1,n)
+           memory = memory |> List.replace_at(2,v)
+
+           output = Day02.run_intcode(memory) |> List.first
+
+        if output == desired_output do
+          { :halt, { n, v } }
+        else
+          { :cont, acc }
+        end
+     end)
+  end
 end

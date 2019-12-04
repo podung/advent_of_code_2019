@@ -18,4 +18,14 @@ defmodule Day02Test do
 
     assert Day02.run_intcode(intcode) |> List.first == 3267740
   end
+
+  test "finds the correct input noun and verb within range" do
+    intcode = "fixtures/day02_fixture.txt"
+      |> File.read!
+      |> Aoc2019Utils.parse_ints
+
+    { noun, verb } =  Day02.find_input_values_for_output(intcode, 19690720)
+
+    assert noun * 100 + verb == 7870
+  end
 end
