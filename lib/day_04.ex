@@ -14,22 +14,10 @@ defmodule Day04 do
   defp all_asc(password), do: password == Enum.sort(password)
   defp contains_dups(password), do: password != Enum.dedup(password)
 
-  defp contains_a_double(password), do: contains_a_double(password, {[], 0 })
-
-  defp contains_a_double([], { data, double_count }) when length(data) == 2, do: true
-  defp contains_a_double([], { _data, double_count }), do: double_count > 0
-
-  defp contains_a_double([h|t], acc), do: contains_a_double(t, process(h, acc))
-
-  defp process(digit, { [h | _t] = data, double_count }) when h == digit do
-    { [digit | data], double_count }
-  end
-
-  defp process(digit, { [h | _t] = data, double_count }) when h != digit and length(data) == 2 do
-    { [digit], double_count + 1 }
-  end
-
-  defp process(digit, { _data, double_count }) do
-    { [digit], double_count }
+  defp contains_a_double(password) do
+    password
+    |> Enum.group_by(&(&1))
+    |> Map.values
+    |> Enum.any?(fn x -> Enum.count(x) == 2 end)
   end
 end
