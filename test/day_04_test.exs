@@ -6,6 +6,6 @@ defmodule Day04Test do
   end
 
   test "calculates part 2 possible passwords correctly" do
-    assert Day04.count_part2(284639,748759) == 895
+    assert Day04.count_part2(284639,748759) == 591
   end
 end
