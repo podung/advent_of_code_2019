@@ -1,16 +1,32 @@
 defmodule Vm do
-  def init_and_run([3, input_register | _t] = memory, input_value) do
-    memory
-    |> write(input_register, input_value)
-    |> run_intcode
-  end
+  #@add_instruction 1
+  #@multiply_instruction 2
+  #@input_instruction 3
+  #@output_instruction 4
+  #@exit_instruction 99
 
-  def run_intcode(intcode) do
-    run(VmData.new(intcode))
+  def run_intcode(intcode, input \\ nil) do
+    run(VmData.new(intcode, input))
   end
 
   defp read(%VmData{ memory: memory }, index), do: Enum.at(memory, index)
   defp write(%VmData{ memory: memory } = data, index, value), do: Map.put(data, :memory, List.replace_at(memory, index, value))
+
+  defp run(%VmData{ remaining: [3, index1 | _t], input: input} = data) do
+    data = data
+           |> write(index1, input)
+           |> advance(2)
+
+    run(data)
+  end
+
+  defp run(%VmData{ remaining: [4, index1 | _t] } = data) do
+    data = data
+           |> Map.put(:output, read(data, index1))
+           |> advance(2)
+
+    run(data)
+  end
 
   defp run(%VmData{ remaining: [1, index1, index2, index3 | _t]} = data) do
     data = data
