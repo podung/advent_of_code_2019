@@ -4,8 +4,6 @@ defmodule Day05Test do
   test "handles inputs and outputs" do
     test_value = 458
 
-    %VmData{ output: output } = Vm.run_intcode([3,0,4,0,99], test_value)
-
-    assert output == test_value
+    assert Day05.get_output([3,0,4,0,99], test_value) == test_value
   end
 end
