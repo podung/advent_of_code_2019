@@ -1,44 +1,54 @@
 defmodule Day02 do
+  def init_and_run([3, input_register | _t] = memory, input_value) do
+    memory
+    |> write(input_register, input_value)
+    |> run_intcode
+  end
+
   def run_intcode(intcode) do
-    run_intcode(Enum.slice(intcode, 0, 4), { 4, intcode })
+    run({ 0, intcode, intcode })
   end
 
-  defp operate(noun_index, verb_index, store_index, instruction, memory) do
-    noun = memory |> Enum.at(noun_index)
-    verb = memory |> Enum.at(verb_index)
+  defp read({ _cursor, _remaining, memory }, index), do: Enum.at(memory, index)
+  defp write({ cursor, remaining, memory }, index, value), do: { cursor, remaining, List.replace_at(memory, index, value) }
 
-    new_value = instruction.(noun, verb)
+  defp run({ _cursor, [1, index1, index2, index3 | _t], _memory } = data) do
+    data = data
+           |> write(index3, read(data, index1) +  read(data, index2))
+           |> advance(4)
 
-    memory |> List.replace_at(store_index, new_value)
+    run(data)
   end
 
-  defp run_intcode([1, index1, index2, index3], { cursor, acc }) do
-    new_memory = operate(index1, index2, index3, &(&1 + &2), acc)
-    next_instruction = new_memory |> Enum.slice(cursor, 4)
+  defp run({ _cursor, [2, index1, index2, index3 | _t], _memory } = data) do
+    data = data
+           |> write(index3, read(data, index1) * read(data, index2))
+           |> advance(4)
 
-    run_intcode(next_instruction, { cursor + 4, new_memory })
+    run(data)
   end
 
-  defp run_intcode([2, index1, index2, index3], { cursor, acc }) do
-    new_memory = operate(index1, index2, index3, &(&1 * &2), acc)
-    next_instruction = new_memory |> Enum.slice(cursor, 4)
+  defp run({ _cursor, [99 | _t], _memory } = data), do: data
 
-    run_intcode(next_instruction, { cursor + 4, new_memory })
+
+  defp advance({ cursor, _remaining, memory }, amount) do
+    cursor = cursor + amount
+
+    { cursor, Enum.slice(memory, cursor..-1), memory }
   end
 
-  defp run_intcode([99 | _t], { _cursor, acc }), do: acc
 
 
   ### Part 2 finder
   def find_input_values_for_output(memory, desired_output) do
     possibilities = for n <- 0..99, v <- 0..99, do: {n, v}
 
-    input_values  = possibilities
+    possibilities
       |> Enum.reduce_while(nil, fn { n, v }, acc ->
            memory = memory |> List.replace_at(1,n)
            memory = memory |> List.replace_at(2,v)
 
-           output = Day02.run_intcode(memory) |> List.first
+           output = elem(Day02.run_intcode(memory), 2) |> List.first
 
         if output == desired_output do
           { :halt, { n, v } }
