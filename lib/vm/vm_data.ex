@@ -27,6 +27,10 @@ defmodule VmData do
   defp convert(2), do: { :multiply, 3 }
   defp convert(3), do: { :init_input, 1 }
   defp convert(4), do: { :record_output, 1 }
+  defp convert(5), do: { :jump_if_true, 2 }
+  defp convert(6), do: { :jump_if_false, 2 }
+  defp convert(7), do: { :less_than, 3 }
+  defp convert(8), do: { :equal_to, 3 }
   defp convert(99), do: { :exit, 0 }
 
   # TODO: comment this with explanation

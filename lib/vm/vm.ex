@@ -66,6 +66,54 @@ defmodule Vm do
     |> run
   end
 
+  defp run(%VmData{ command: :less_than } = data) do
+    param1 = param(data, 0)
+    param2 = param(data, 1)
+    param3 = data.params |> Enum.at(2) |> Map.get(:value)
+
+    is_less_than = if param1 < param2, do: 1, else: 0
+
+    data
+    |> write(param3, is_less_than)
+    |> advance
+    |> run
+  end
+
+  defp run(%VmData{ command: :equal_to } = data) do
+    param1 = param(data, 0)
+    param2 = param(data, 1)
+    param3 = data.params |> Enum.at(2) |> Map.get(:value)
+
+    is_equal_to = if param1 == param2, do: 1, else: 0
+
+    data
+    |> write(param3, is_equal_to)
+    |> advance
+    |> run
+  end
+
+  defp run(%VmData{ command: :jump_if_true, cursor: cursor } = data) do
+    param1 = param(data, 0)
+    param2 = param(data, 1)
+    cursor = if param1 != 0, do: param2, else: cursor
+
+    data
+    |> Map.put(:cursor, cursor)
+    |> advance
+    |> run
+  end
+
+  defp run(%VmData{ command: :jump_if_false, cursor: cursor } = data) do
+    param1 = param(data, 0)
+    param2 = param(data, 1)
+    cursor = if param1 == 0, do: param2, else: cursor
+
+    data
+    |> Map.put(:cursor, cursor)
+    |> advance
+    |> run
+  end
+
   defp run(%VmData{ command: :exit } = data), do: data
 
   defp advance(%VmData{} = data), do: VmData.parse_next(data)
