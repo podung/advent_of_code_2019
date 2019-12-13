@@ -2,7 +2,6 @@ defmodule Vm do
   def run_intcode(intcode, inputs \\ []) do
     intcode
     |> VmData.new(inputs)
-    |> record_inputs(0)
     |> run
   end
 
@@ -15,23 +14,20 @@ defmodule Vm do
               List.replace_at(memory, register, value))
   end
 
-  defp record_inputs(%VmData{ command: :init_input } = data, index) do
-    register = data.params |> List.first |> Map.get(:value)
-
-    input = data.inputs |> Enum.at(index)
-
-    data
-    |> write(register, input)
-    |> advance
-    |> record_inputs(index + 1)
-  end
-
-  defp record_inputs(data, _index), do: data
-
   defp param(%VmData{ params: params } = data, index) do
     param = params |> Enum.at(index)
 
     if param.mode == :position, do: read(data, param.value), else: param.value
+  end
+
+  defp run(%VmData{ command: :init_input } = data) do
+    register = data.params |> List.first |> Map.get(:value)
+
+    data
+    |> write(register, Enum.at(data.inputs, 0))
+    |> Map.replace!(:inputs, List.delete_at(data.inputs, 0))
+    |> advance
+    |> run
   end
 
   defp run(%VmData{ command: :record_output } = data) do

@@ -21,4 +21,12 @@ defmodule Day07Test do
 
     assert Day07.amplify(memory, 0, [1,0,4,3,2]) == 65210
   end
+
+  test "choose correct phases for sample data" do
+    intcode = "fixtures/day07_fixture.txt"
+      |> File.read!
+      |> Aoc2019Utils.parse_ints
+
+    assert Day07.optimized_amplification(intcode) == 212460
+  end
 end
