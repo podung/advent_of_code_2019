@@ -1,38 +1,38 @@
 defmodule Vm do
-  #@add_instruction 1
-  #@multiply_instruction 2
-  #@input_instruction 3
-  #@output_instruction 4
-  #@exit_instruction 99
-
-  def run_intcode(intcode, input \\ nil) do
+  def run_intcode(intcode, inputs \\ []) do
     intcode
-    |> VmData.new(input)
+    |> VmData.new(inputs)
     |> advance
+    |> record_inputs(0)
     |> run
   end
 
   defp read(%VmData{ memory: memory }, index) do
     Enum.at(memory, index)
   end
+
   defp write(%VmData{ memory: memory } = data, register, value) do
     data |> Map.put(:memory,
               List.replace_at(memory, register, value))
   end
 
-  defp param(%VmData{ params: params } = data, index) do
-    param = params |> Enum.at(index)
-
-    if param.mode == :position, do: read(data, param.value), else: param.value
-  end
-
-  defp run(%VmData{ command: :init_input, input: input } = data) do
+  defp record_inputs(%VmData{ command: :init_input } = data, index) do
     register = data.params |> List.first |> Map.get(:value)
+
+    input = data.inputs |> Enum.at(index)
 
     data
     |> write(register, input)
     |> advance
-    |> run
+    |> record_inputs(index + 1)
+  end
+
+  defp record_inputs(data, _index), do: data
+
+  defp param(%VmData{ params: params } = data, index) do
+    param = params |> Enum.at(index)
+
+    if param.mode == :position, do: read(data, param.value), else: param.value
   end
 
   defp run(%VmData{ command: :record_output } = data) do

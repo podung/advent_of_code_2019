@@ -3,11 +3,11 @@ defmodule VmData do
             command: nil,
             params: [],
             memory: [],
-            input: nil,
+            inputs: [],
             output: nil
 
-  def new(memory, input \\ nil) do
-    %VmData{ memory: memory, input: input }
+  def new(memory, inputs) do
+    %VmData{ memory: memory, inputs: inputs }
   end
 
   def parse_next(%VmData{ cursor: cursor, memory: memory }=data) do
