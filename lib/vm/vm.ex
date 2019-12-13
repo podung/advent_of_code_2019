@@ -2,7 +2,6 @@ defmodule Vm do
   def run_intcode(intcode, inputs \\ []) do
     intcode
     |> VmData.new(inputs)
-    |> advance
     |> record_inputs(0)
     |> run
   end

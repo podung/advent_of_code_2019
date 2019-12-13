@@ -8,6 +8,7 @@ defmodule VmData do
 
   def new(memory, inputs) do
     %VmData{ memory: memory, inputs: inputs }
+    |> parse_next
   end
 
   def parse_next(%VmData{ cursor: cursor, memory: memory }=data) do
